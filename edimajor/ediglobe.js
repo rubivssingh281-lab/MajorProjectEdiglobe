@@ -13,8 +13,7 @@ const xss = require("xss");
 const crypto = require("crypto");
 const app = express();
 
-// ==================== MIDDLEWARE ====================
-
+//middleware
 // Helmet security headers
 app.use(helmet({
     contentSecurityPolicy: {
@@ -81,7 +80,7 @@ app.use(express.static("public", {
     }
 }));
 
-// ==================== DATABASE CONNECTION ====================
+//Database
 
 const db = mysql.createPool({
     host: process.env.DB_HOST,
@@ -96,7 +95,7 @@ const db = mysql.createPool({
     ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : null
 });
 
-// Setup security tables (runs after connection)
+// Setup security tables
 async function setupSecurityTriggers() {
     try {
         await db.execute(`
@@ -157,7 +156,7 @@ async function testConnection() {
 }
 testConnection();
 
-// ==================== SESSION MIDDLEWARE (memory store) ====================
+//Session time Middleware
 
 app.use(session({
     secret: process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex'),
@@ -173,7 +172,7 @@ app.use(session({
     name: 'sessionId'
 }));
 
-// ==================== SECURITY MIDDLEWARE ====================
+//Security Middleware
 
 // XSS Protection
 const xssProtection = (req, res, next) => {
@@ -217,7 +216,7 @@ const sanitizeInput = (req, res, next) => {
 };
 app.use(sanitizeInput);
 
-// ==================== ROUTES ====================
+//Routes
 
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public", "login.html")));
 app.get("/login", (req, res) => res.sendFile(path.join(__dirname, "public", "login.html")));
@@ -227,7 +226,7 @@ app.get("/dashboard", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "dashboard.html"));
 });
 
-// Register
+// Registers
 app.post("/api/register",
     [
         body('email').isEmail().normalizeEmail().withMessage('Invalid email format')
@@ -316,7 +315,7 @@ app.post("/api/login",
                 return res.status(401).json({ error: "Invalid credentials" });
             }
 
-            // Successful login
+// Successful login
             req.session.userId = user.id;
             req.session.userEmail = user.email;
             req.session.createdAt = Date.now();
@@ -376,7 +375,7 @@ app.get("/api/auth/status", async (req, res) => {
     }
 });
 
-// ==================== ERROR HANDLING ====================
+//Error Handling
 
 app.use((req, res) => {
     res.status(404).sendFile(path.join(__dirname, "public", "404.html"));
@@ -387,7 +386,7 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: "Internal server error" });
 });
 
-// Start server
+// Starting server
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => {
     console.log(`Secure server running on port ${PORT}`);
