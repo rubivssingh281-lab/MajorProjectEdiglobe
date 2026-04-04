@@ -476,7 +476,7 @@
         // Add rate limiting protection
         let signupAttempts = 0;
         const MAX_SIGNUP_ATTEMPTS = 3;
-        const SIGNUP_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+        const SIGNUP_TIMEOUT = 30 * 60 * 1000;
         
         function checkSignupAttempts() {
             const stored = localStorage.getItem('signupAttempts');
