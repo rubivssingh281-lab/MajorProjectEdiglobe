@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Sign Up - Ediglobe Secure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+
+        input.error {
+            border-color: #e74c3c;
+        }
+
+        input.success {
+            border-color: #27ae60;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .links a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .error-message {
+            background: #fde8e8;
+            color: #e74c3c;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .success-message {
+            background: #e8f8f0;
+            color: #27ae60;
+            border-left: 4px solid #27ae60;
+        }
+
+        .password-requirements {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .requirement {
+            margin: 4px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .requirement::before {
+            content: "❌";
+            position: absolute;
+            left: 0;
+        }
+
+        .requirement.valid::before {
+            content: "✅";
+        }
+
+        .requirement.valid {
+            color: #27ae60;
+        }
+
+        .security-info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+            font-family: monospace;
+            background: rgba(0,0,0,0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .strength-meter {
+            height: 3px;
+            background: #e1e1e1;
+            margin-top: 5px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s, background 0.3s;
+        }
+
+        .strength-text {
+            font-size: 11px;
+            margin-top: 3px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🔐 Create Secure Account</h2>
+        <form id="signupForm" autocomplete="off">
+            <div class="form-group">
+                <input type="email" id="email" name="email" placeholder="Email Address" required autocomplete="email">
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" name="password" placeholder="Password" required autocomplete="new-password">
+                <div class="strength-meter">
+                    <div class="strength-bar" id="strengthBar"></div>
+                </div>
+                <div class="strength-text" id="strengthText"></div>
+                <div class="password-requirements">
+                    <div class="requirement" id="reqLength">At least 8 characters</div>
+                    <div class="requirement" id="reqUppercase">At least one uppercase letter</div>
+                    <div class="requirement" id="reqLowercase">At least one lowercase letter</div>
+                    <div class="requirement" id="reqNumber">At least one number</div>
+                    <div class="requirement" id="reqSpecial">At least one special character (@$!%*?&)</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required autocomplete="off">
+            </div>
+            <button type="submit" id="submitBtn">Create Account</button>
+        </form>
+        <div id="errorMessage" class="message error-message"></div>
+        <div id="successMessage" class="message success-message"></div>
+        <div class="links">
+            <a href="login.html">Already have an account? Login</a>
+        </div>
+    </div>
+    <div class="security-info">
+        🔒 Secure Registration | All data encrypted
+    </div>
+
+    <script>
+        const form = document.getElementById('signupForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const submitBtn = document.getElementById('submitBtn');
+        const errorDisplay = document.getElementById('errorMessage');
+        const successDisplay = document.getElementById('successMessage');
+        const strengthBar = document.getElementById('strengthBar');
+        const strengthText = document.getElementById('strengthText');
+        
+        let isSubmitting = false;
+        
+        // Password requirements elements
+        const reqLength = document.getElementById('reqLength');
+        const reqUppercase = document.getElementById('reqUppercase');
+        const reqLowercase = document.getElementById('reqLowercase');
+        const reqNumber = document.getElementById('reqNumber');
+        const reqSpecial = document.getElementById('reqSpecial');
+        
+        // Password strength checker
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            let requirements = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /[0-9]/.test(password),
+                special: /[@$!%*?&]/.test(password)
+            };
+            
+            // Update requirement indicators
+            reqLength.classList.toggle('valid', requirements.length);
+            reqUppercase.classList.toggle('valid', requirements.uppercase);
+            reqLowercase.classList.toggle('valid', requirements.lowercase);
+            reqNumber.classList.toggle('valid', requirements.number);
+            reqSpecial.classList.toggle('valid', requirements.special);
+            
+            // Calculate strength
+            if (requirements.length) strength++;
+            if (requirements.uppercase) strength++;
+            if (requirements.lowercase) strength++;
+            if (requirements.number) strength++;
+            if (requirements.special) strength++;
+            
+            // Update strength meter
+            const percentage = (strength / 5) * 100;
+            strengthBar.style.width = percentage + '%';
+            
+            // Update strength text and color
+            if (strength === 0) {
+                strengthBar.style.background = '#e74c3c';
+                strengthText.textContent = 'Very Weak';
+                strengthText.style.color = '#e74c3c';
+            } else if (strength <= 2) {
+                strengthBar.style.background = '#e67e22';
+                strengthText.textContent = 'Weak';
+                strengthText.style.color = '#e67e22';
+            } else if (strength <= 3) {
+                strengthBar.style.background = '#f1c40f';
+                strengthText.textContent = 'Fair';
+                strengthText.style.color = '#f1c40f';
+            } else if (strength <= 4) {
+                strengthBar.style.background = '#27ae60';
+                strengthText.textContent = 'Good';
+                strengthText.style.color = '#27ae60';
+            } else {
+                strengthBar.style.background = '#2ecc71';
+                strengthText.textContent = 'Strong';
+                strengthText.style.color = '#2ecc71';
+            }
+            
+            return {
+                isValid: requirements.length && requirements.uppercase && 
+                         requirements.lowercase && requirements.number && requirements.special,
+                strength: strength
+            };
+        }
+        
+        // Real-time password validation
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            checkPasswordStrength(password);
+            
+            if (confirmPasswordInput.value) {
+                validateConfirmPassword();
+            }
+        });
+        
+        // Confirm password validation
+        function validateConfirmPassword() {
+            if (confirmPasswordInput.value !== passwordInput.value) {
+                confirmPasswordInput.setCustomValidity("Passwords do not match");
+                confirmPasswordInput.classList.add('error');
+                return false;
+            } else {
+                confirmPasswordInput.setCustomValidity("");
+                confirmPasswordInput.classList.remove('error');
+                confirmPasswordInput.classList.add('success');
+                return true;
+            }
+        }
+        
+        confirmPasswordInput.addEventListener('input', validateConfirmPassword);
+        
+        // Email validation with allowed domains
+        function validateEmail(email) {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const allowedDomains = ["gmail.com", "outlook.com", "yahoo.com", "icloud.com", "protonmail.com", "zoho.com"];
+            
+            if (!emailPattern.test(email)) {
+                return { valid: false, message: "Please enter a valid email format." };
+            }
+            
+            const domain = email.split('@')[1].toLowerCase();
+            if (!allowedDomains.includes(domain)) {
+                return { valid: false, message: "Only Gmail, Outlook, Yahoo, iCloud, ProtonMail, or Zoho emails are allowed." };
+            }
+            
+            return { valid: true, message: "" };
+        }
+        
+        // Real-time email validation
+        emailInput.addEventListener('input', function() {
+            const result = validateEmail(this.value);
+            if (!result.valid && this.value) {
+                this.setCustomValidity(result.message);
+                this.classList.add('error');
+                this.classList.remove('success');
+            } else if (this.value) {
+                this.setCustomValidity("");
+                this.classList.remove('error');
+                this.classList.add('success');
+            } else {
+                this.classList.remove('error', 'success');
+            }
+        });
+        
+        // Form submission
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            if (isSubmitting) return;
+            
+            // Clear previous messages
+            errorDisplay.style.display = 'none';
+            successDisplay.style.display = 'none';
+            
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            
+            // Validate email
+            const emailValidation = validateEmail(email);
+            if (!emailValidation.valid) {
+                errorDisplay.textContent = emailValidation.message;
+                errorDisplay.style.display = 'block';
+                emailInput.focus();
+                return;
+            }
+            
+            // Validate password strength
+            const passwordStrength = checkPasswordStrength(password);
+            if (!passwordStrength.isValid) {
+                errorDisplay.textContent = "Please meet all password requirements.";
+                errorDisplay.style.display = 'block';
+                passwordInput.focus();
+                return;
+            }
+            
+            // Validate password match
+            if (password !== confirmPassword) {
+                errorDisplay.textContent = "Passwords do not match.";
+                errorDisplay.style.display = 'block';
+                confirmPasswordInput.focus();
+                return;
+            }
+            
+            // Show loading state
+            isSubmitting = true;
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Creating Account...";
+            
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ email, password, confirmPassword })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    successDisplay.textContent = data.message || "Account created successfully! Redirecting to login...";
+                    successDisplay.style.display = 'block';
+                    
+                    // Clear form
+                    form.reset();
+                    strengthBar.style.width = '0%';
+                    strengthText.textContent = '';
+                    
+                    setTimeout(() => {
+                        window.location.href = "login.html";
+                    }, 1500);
+                } else {
+                    errorDisplay.textContent = data.error || "Registration failed. Please try again.";
+                    errorDisplay.style.display = 'block';
+                }
+            } catch (error) {
+                console.error("Registration error:", error);
+                errorDisplay.textContent = "Network error. Please check your connection and try again.";
+                errorDisplay.style.display = 'block';
+            } finally {
+                isSubmitting = false;
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Create Account";
+            }
+        });
+        
+        // Clear messages on input
+        const clearMessages = () => {
+            errorDisplay.style.display = 'none';
+            successDisplay.style.display = 'none';
+        };
+        
+        emailInput.addEventListener('input', clearMessages);
+        passwordInput.addEventListener('input', clearMessages);
+        confirmPasswordInput.addEventListener('input', clearMessages);
+        
+        // Prevent XSS by sanitizing any potential script injections
+        function sanitizeInput(input) {
+            const div = document.createElement('div');
+            div.textContent = input;
+            return div.innerHTML;
+        }
+        
+        // Add rate limiting protection
+        let signupAttempts = 0;
+        const MAX_SIGNUP_ATTEMPTS = 3;
+        const SIGNUP_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+        
+        function checkSignupAttempts() {
+            const stored = localStorage.getItem('signupAttempts');
+            if (!stored) return true;
+            
+            const data = JSON.parse(stored);
+            if (Date.now() - data.timestamp < SIGNUP_TIMEOUT) {
+                if (data.count >= MAX_SIGNUP_ATTEMPTS) {
+                    errorDisplay.textContent = `Too many signup attempts. Please try again in ${Math.ceil((SIGNUP_TIMEOUT - (Date.now() - data.timestamp)) / 60000)} minutes.`;
+                    errorDisplay.style.display = 'block';
+                    return false;
+                }
+            } else {
+                localStorage.removeItem('signupAttempts');
+            }
+            return true;
+        }
+        
+        function recordSignupAttempt() {
+            const stored = localStorage.getItem('signupAttempts');
+            let count = 1;
+            let timestamp = Date.now();
+            
+            if (stored) {
+                const data = JSON.parse(stored);
+                if (Date.now() - data.timestamp < SIGNUP_TIMEOUT) {
+                    count = data.count + 1;
+                    timestamp = data.timestamp;
+                }
+            }
+            
+            localStorage.setItem('signupAttempts', JSON.stringify({
+                count: count,
+                timestamp: timestamp
+            }));
+        }
+        
+        // Add attempt check to form submission
+        const originalSubmit = form.onsubmit;
+        form.onsubmit = async function(event) {
+            if (!checkSignupAttempts()) {
+                event.preventDefault();
+                return false;
+            }
+            return originalSubmit ? originalSubmit.call(this, event) : true;
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{
+  "name": "ediglobe-secure",
+  "version": "2.0.0",
+  "description": "Secure authentication system with SQL injection and XSS protection",
+  "main": "ediglobe.js",
+  "scripts": {
+    "start": "node ediglobe.js",
+    "dev": "nodemon ediglobe.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "authentication",
+    "security",
+    "sql-injection-protection",
+    "xss-protection"
+  ],
+  "author": "Your Name",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "csurf": "^1.11.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-mysql-session": "^2.1.8",
+    "express-rate-limit": "^7.1.5",
+    "express-session": "^1.17.3",
+    "express-validator": "^7.0.1",
+    "helmet": "^7.1.0",
+    "mysql2": "^3.6.5",
+    "xss": "^1.0.14"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
